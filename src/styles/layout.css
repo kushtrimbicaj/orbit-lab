@@ -1,0 +1,176 @@
+/* ==========================================================================
+   Layout: full-screen scene with floating HUD panels
+   ========================================================================== */
+.app {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 40%, #0a1028 0%, var(--color-void) 70%);
+}
+
+.app__scene { position: absolute; inset: 0; }
+.scene-canvas { touch-action: none; user-select: none; -webkit-user-select: none; }
+
+/* Subtle edge darkening to seat the HUD on the scene */
+.app__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at center, transparent 55%, rgba(1, 2, 8, 0.55) 100%),
+    linear-gradient(to bottom, rgba(1, 2, 8, 0.55), transparent 120px);
+}
+
+.hud {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+.hud > * { pointer-events: auto; }
+
+.glass {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--glass-shadow);
+  backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(140%);
+}
+
+/* ---- Header ------------------------------------------------------------ */
+.header {
+  position: absolute;
+  top: var(--edge);
+  left: var(--edge);
+  right: var(--edge);
+  height: var(--header-h);
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: var(--space-4);
+  pointer-events: none;
+}
+.header > * { pointer-events: auto; }
+.header__actions { justify-self: end; display: flex; gap: var(--space-2); }
+
+/* ---- Left sidebar ------------------------------------------------------- */
+.sidebar {
+  position: absolute;
+  top: calc(var(--edge) + var(--header-h) + var(--space-3));
+  left: var(--edge);
+  width: 214px;
+  max-height: calc(100% - var(--header-h) - 2 * var(--edge) - var(--space-3) - 8px);
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-3);
+}
+
+/* ---- Right contextual panel ------------------------------------------- */
+.context-panel {
+  position: absolute;
+  top: calc(var(--edge) + var(--header-h) + var(--space-3));
+  right: var(--edge);
+  bottom: var(--edge);
+  width: 372px;
+  overflow-y: auto;
+  padding: var(--space-5);
+  background: var(--glass-bg-strong);
+  animation: panel-in var(--dur-med) var(--ease-out);
+}
+@keyframes panel-in {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ---- Bottom simulation controls ---------------------------------------- */
+.sim-controls {
+  position: absolute;
+  bottom: var(--edge);
+  left: 50%;
+  transform: translateX(-50%);
+  transition: left var(--dur-med) var(--ease-out);
+}
+/* Keep the controls centred in the free space between sidebar and panel */
+.has-panel .sim-controls { left: calc(50% - 79px); }
+
+.mobile-dock { display: none; }
+
+.scale-note {
+  position: absolute;
+  left: 50%;
+  bottom: 104px;
+  transform: translateX(-50%);
+  z-index: 5;
+  margin: 0;
+  font-size: var(--fs-xs);
+  letter-spacing: 0.04em;
+  color: var(--color-muted);
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0.75;
+}
+.has-panel .scale-note { display: none; }
+
+/* ==========================================================================
+   Tablet
+   ========================================================================== */
+@media (max-width: 1180px) {
+  .context-panel { width: 330px; padding: var(--space-4); }
+  .sidebar { width: 190px; }
+  .has-panel .sim-controls { left: calc(50% - 70px); }
+}
+
+@media (max-width: 1020px) {
+  /* Panel overlays the right side; controls sit below the sidebar width */
+  .has-panel .sim-controls { left: calc(50% - 173px); }
+  .scale-note { display: none; }
+}
+
+/* ==========================================================================
+   Mobile
+   ========================================================================== */
+@media (max-width: 760px) {
+  :root { --edge: 10px; --header-h: 52px; }
+
+  .header { grid-template-columns: auto 1fr auto; gap: var(--space-2); }
+  .sidebar { display: none; }
+
+  .mobile-dock {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: var(--space-2) var(--edge) calc(var(--edge) + env(safe-area-inset-bottom));
+    background: linear-gradient(to top, rgba(2, 3, 10, 0.92) 60%, transparent);
+  }
+
+  .sim-controls,
+  .has-panel .sim-controls {
+    left: var(--edge);
+    right: var(--edge);
+    transform: none;
+    bottom: calc(118px + env(safe-area-inset-bottom));
+  }
+
+  .context-panel {
+    top: auto;
+    left: var(--edge);
+    right: var(--edge);
+    bottom: var(--edge);
+    width: auto;
+    max-height: 62%;
+    z-index: 20;
+    border-radius: var(--radius-lg);
+    animation-name: sheet-in;
+  }
+  @keyframes sheet-in {
+    from { opacity: 0; transform: translateY(32px); }
+    to { opacity: 1; transform: none; }
+  }
+  /* Bottom sheet replaces the dock and controls while open */
+  .has-panel .mobile-dock,
+  .has-panel .sim-controls { visibility: hidden; }
+}

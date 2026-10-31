@@ -1,0 +1,27 @@
+{
+  "name": "orbitlab",
+  "private": true,
+  "version": "1.0.0",
+  "description": "OrbitLab — an interactive 3D solar system simulator built with React, Three.js and React Three Fiber.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "textures": "python3 tools/generate_textures.py"
+  },
+  "dependencies": {
+    "@react-three/drei": "^9.117.0",
+    "@react-three/fiber": "^8.17.10",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.3",
+    "vite": "^5.4.10"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
